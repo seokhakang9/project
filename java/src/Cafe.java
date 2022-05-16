@@ -39,6 +39,9 @@ public class Cafe {
    static BufferedReader in = new BufferedReader(
                                 new InputStreamReader(System.in));
 
+   // login & type of current user
+   String user_login;
+
    /**
     * Creates a new instance of Cafe
     *
@@ -333,7 +336,7 @@ public class Cafe {
    public static void CreateUser(Cafe esql){
       try{
          System.out.print("\tEnter user login: ");
-         String login = in.readLine();
+         String login = in.readLine(); esql.user_login = login;
          System.out.print("\tEnter user password: ");
          String password = in.readLine();
          System.out.print("\tEnter user phone: ");
@@ -359,7 +362,7 @@ public class Cafe {
    public static String LogIn(Cafe esql){
       try{
          System.out.print("\tEnter user login: ");
-         String login = in.readLine();
+         String login = in.readLine(); esql.user_login = login;
          System.out.print("\tEnter user password: ");
          String password = in.readLine();
 
@@ -397,13 +400,21 @@ public class Cafe {
          case 1: set = in.readLine(); input = "phoneNum"; break;
          case 2: set = in.readLine(); input = "password"; break;
          case 3: set = in.readLine(); input = "favoriteItem"; break;
-         case 4: /*Check FIRST*/ set = in.readLine(); input = "type"; break;
-         case 5: /*Check FIRST*/ set = in.readLine(); 
-         String query = String.format("UPDATE Updates SET target = %s WHERE Updates.updater = %s;", set, input, user_login); break;
+         case 4: if(GetType(esql)!="manager"){return;} set = in.readLine(); input = "type"; break;
+         case 5: if(GetType(esql)!="manager"){return;} set = in.readLine(); 
+         String query = String.format("UPDATE Updates SET target = %s WHERE Updates.updater = %s;", set, input, esql.user_login); break;
       }
       //Assume updater and target are always the same for customers
-      String query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, user_login); 
+      String query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, esql.user_login); 
 
+  }
+
+  //Helper function
+
+  public static String GetType(Cafe esql){
+     String query = String.format("SELECT U.type FROM Users U WHERE U.login = %s;", esql.user_login);
+     List<List<string>> result = esql.executeQueryAndReturnResult (query)[0][0];
+     if (result.size()>0){ return result[0][0]; }
   }
 
   public static void PlaceOrder(Cafe esql){}
