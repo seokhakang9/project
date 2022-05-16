@@ -378,7 +378,33 @@ public class Cafe {
 
   public static void Menu(Cafe esql){}
 
-  public static void UpdateProfile(Cafe esql){}
+  public static void UpdateProfile(Cafe esql){
+     // Check user
+      System.out.println("USER MENU");
+      System.out.println("---------");
+      System.out.println("1. phoneNum");
+      System.out.println("2. password");
+      System.out.println("3. favoriteItem");
+      System.out.println("4. type (manager only)");
+      System.out.println("5. target (manager only)");
+      System.out.println(".........................");
+      System.out.println("9. exit");
+
+      String input;
+      String set;
+
+      switch (readChoice()){
+         case 1: set = in.readLine(); input = "phoneNum"; break;
+         case 2: set = in.readLine(); input = "password"; break;
+         case 3: set = in.readLine(); input = "favoriteItem"; break;
+         case 4: /*Check FIRST*/ set = in.readLine(); input = "type"; break;
+         case 5: /*Check FIRST*/ set = in.readLine(); 
+         String query = String.format("UPDATE Updates SET target = %s WHERE Updates.updater = %s;", set, input, user_login); break;
+      }
+      //Assume updater and target are always the same for customers
+      String query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, user_login); 
+
+  }
 
   public static void PlaceOrder(Cafe esql){}
 
