@@ -19,6 +19,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -382,7 +383,8 @@ public class Cafe {
   public static void Menu(Cafe esql){}
 
   public static void UpdateProfile(Cafe esql){
-     // Check user
+    try {
+      // Check user
       System.out.println("USER MENU");
       System.out.println("---------");
       System.out.println("1. phoneNum");
@@ -393,28 +395,63 @@ public class Cafe {
       System.out.println(".........................");
       System.out.println("9. exit");
 
-      String input;
-      String set;
+      String input = "";
+      String set = "";
+      String query = "";
 
       switch (readChoice()){
-         case 1: set = in.readLine(); input = "phoneNum"; break;
-         case 2: set = in.readLine(); input = "password"; break;
-         case 3: set = in.readLine(); input = "favoriteItem"; break;
-         case 4: if(GetType(esql)!="manager"){return;} set = in.readLine(); input = "type"; break;
-         case 5: if(GetType(esql)!="manager"){return;} set = in.readLine(); 
-         String query = String.format("UPDATE Updates SET target = %s WHERE Updates.updater = %s;", set, input, esql.user_login); break;
+        case 1: 
+          System.out.print("\tEnter phoneNum: ");
+          set = in.readLine(); 
+          input = "phoneNum"; 
+          query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, esql.user_login); 
+          break;
+        case 2: 
+          System.out.print("\tEnter password: ");
+          set = in.readLine(); 
+          input = "password"; 
+          query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, esql.user_login); 
+          break;
+        case 3: 
+          System.out.print("\tEnter favoriteItem: ");
+          set = in.readLine(); 
+          input = "favoriteItem"; 
+          // TODO Add assertion to table to prevent invalid favorite item usage.
+          query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, esql.user_login); 
+          break;
+        case 4: 
+          System.out.print("\tEnter type: ");
+          if(GetType(esql)!="manager"){return;} 
+          set = in.readLine(); 
+          input = "type"; 
+          query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, esql.user_login); 
+          break;
+        case 5: 
+          System.out.print("\tEnter target login: ");
+          if(GetType(esql)!="manager"){return;} 
+          set = in.readLine(); 
+          query = String.format("UPDATE Updates SET target = %s WHERE Updates.updater = %s;", set, input, esql.user_login); break;
       }
-      //Assume updater and target are always the same for customers
-      String query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, esql.user_login); 
-
+      esql.executeQuery(query); 
+    } catch (Exception e) {
+      // e.printStackTrace();
+      System.err.println (e.getMessage ());
+    } 
   }
 
   //Helper function
 
   public static String GetType(Cafe esql){
-     String query = String.format("SELECT U.type FROM Users U WHERE U.login = %s;", esql.user_login);
-     List<List<string>> result = esql.executeQueryAndReturnResult (query)[0][0];
-     if (result.size()>0){ return result[0][0]; }
+    try {
+      String query = String.format("SELECT U.type FROM Users U WHERE U.login = %s;", esql.user_login);
+      List<List<String>> result;
+      result = esql.executeQueryAndReturnResult (query);
+      return result.get(0).get(0); 
+    } catch (Exception e) {
+      // e.printStackTrace();
+         System.err.println (e.getMessage ());
+    }
+    return "";
   }
 
   public static void PlaceOrder(Cafe esql){}
