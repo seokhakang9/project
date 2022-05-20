@@ -383,67 +383,93 @@ public class Cafe {
   public static void Menu(Cafe esql){}
 
   public static void UpdateProfile(Cafe esql){
+
+    String attribute = "";
+    String set = "";
+    String query = "";
+    String target = esql.user_login;
+
     try {
-      // Check user
-      System.out.println("USER MENU");
-      System.out.println("---------");
-      System.out.println("1. phoneNum");
-      System.out.println("2. password");
-      System.out.println("3. favoriteItem");
-      System.out.println("4. type (manager only)");
-      System.out.println("5. target (manager only)");
-      System.out.println(".........................");
-      System.out.println("9. exit");
+      boolean keepon = true;
+      while (keepon) {
+        // Check user
+        System.out.println("USER MENU ["+target+"]");
+        System.out.println("---------");
+        System.out.println("1. phoneNum");
+        System.out.println("2. password");
+        System.out.println("3. favoriteItem");
+        System.out.println("4. type (manager only)");
+        System.out.println("5. target (manager only)");
+        System.out.println(".........................");
+        System.out.println("9. exit");
 
-      String input = "";
-      String set = "";
-      String query = "";
-
-      switch (readChoice()){
-        case 1: 
-          System.out.print("\tEnter phoneNum: ");
-          set = in.readLine(); 
-          input = "phoneNum"; 
-          query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, esql.user_login); 
-          break;
-        case 2: 
-          System.out.print("\tEnter password: ");
-          set = in.readLine(); 
-          input = "password"; 
-          query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, esql.user_login); 
-          break;
-        case 3: 
-          System.out.print("\tEnter favoriteItem: ");
-          set = in.readLine(); 
-          input = "favItems"; 
-          // Ok so I've realized that favItems is 400 char plural while item names are 50 char singular. I was gonna put a checker to make sure the favItem exists, but now I think I'll leave it actually
-          query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, esql.user_login); 
-          break;
-        case 4: 
-          System.out.print("\tEnter type: ");
-          if(GetType(esql)!="manager"){return;} 
-          set = in.readLine(); 
-          input = "type"; 
-          query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, esql.user_login); 
-          break;
-        case 5: 
-          System.out.print("\tEnter target login: ");
-          if(GetType(esql)!="manager"){return;} 
-          set = in.readLine(); 
-          query = String.format("UPDATE Updates SET target = %s WHERE Updates.updater = %s;", set, input, esql.user_login); break;
+        switch (readChoice()){
+          case 1: 
+            System.out.print("\tEnter phoneNum: ");
+            set = in.readLine(); 
+            attribute = "phoneNum"; 
+            query = String.format("UPDATE Users SET %s = '%s' WHERE Users.login = '%s';", attribute, set, target); 
+            keepon=false;
+            break;
+          case 2: 
+            System.out.print("\tEnter password: ");
+            set = in.readLine(); 
+            attribute = "password"; 
+            query = String.format("UPDATE Users SET %s = '%s' WHERE Users.login = '%s';", attribute, set, target); 
+            keepon=false;
+            //System.out.print(query);
+            break;
+          case 3: 
+            System.out.print("\tEnter favoriteItem: ");
+            set = in.readLine(); 
+            attribute = "favItems"; 
+            // Ok so I've realized that favItems is 400 char plural while item names are 50 char singular. I was gonna put a checker to make sure the favItem exists, but now I think I'll leave it actually
+            query = String.format("UPDATE Users SET %s = '%s' WHERE Users.login = '%s';", attribute, set, target); 
+            keepon=false;
+            break;
+          case 4: 
+            System.out.print("\tEnter type: ");
+            if(!GetType(esql).equalsIgnoreCase("Manager ")){
+              System.out.print("ERROR: Need manager privilage. You are a "+GetType(esql)+".\n");
+              return;
+            } 
+            set = in.readLine(); 
+            attribute = "type"; 
+            query = String.format("UPDATE Users SET %s = '%s' WHERE Users.login = '%s';", attribute, set, target); 
+            keepon=false;
+            break;
+          case 5: 
+            if(!GetType(esql).equalsIgnoreCase("Manager ")){
+              System.out.print("ERROR: Need manager privilage. You are a "+GetType(esql)+".\n");
+              return;
+            } 
+            System.out.print("\tEnter target login: ");
+            //Check if target exists first
+            String input = in.readLine(); 
+            if(LoginExists(esql, input)){
+              target = input; 
+              continue;
+            }else{
+              System.out.println("ERROR: Invalid login."); 
+              keepon=false;
+              break;
+            }
+          case 9:
+            return;
+        }
+        esql.executeUpdate(query); 
       }
-      esql.executeQuery(query); 
     } catch (Exception e) {
       // e.printStackTrace();
       System.err.println (e.getMessage ());
     } 
   }
 
-  //Helper function
+  //Helper functions
 
   public static String GetType(Cafe esql){
     try {
-      String query = String.format("SELECT U.type FROM Users U WHERE U.login = %s;", esql.user_login);
+      String query = String.format("SELECT U.type FROM Users U WHERE U.login = '%s';", esql.user_login);
       List<List<String>> result;
       result = esql.executeQueryAndReturnResult (query);
       return result.get(0).get(0); 
@@ -452,6 +478,19 @@ public class Cafe {
          System.err.println (e.getMessage ());
     }
     return "";
+  }
+
+  public static boolean LoginExists(Cafe esql, String l){
+    try {
+      String query = String.format("SELECT U.type FROM Users U WHERE U.login = '%s';", l);
+      int result;
+      result = esql.executeQuery (query);
+      return result > 0; 
+    } catch (Exception e) {
+      // e.printStackTrace();
+         System.err.println (e.getMessage ());
+    }
+    return false;
   }
 
   public static void PlaceOrder(Cafe esql){}
