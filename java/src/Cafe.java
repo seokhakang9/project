@@ -415,8 +415,8 @@ public class Cafe {
         case 3: 
           System.out.print("\tEnter favoriteItem: ");
           set = in.readLine(); 
-          input = "favoriteItem"; 
-          // TODO Add assertion to table to prevent invalid favorite item usage.
+          input = "favItems"; 
+          // Ok so I've realized that favItems is 400 char plural while item names are 50 char singular. I was gonna put a checker to make sure the favItem exists, but now I think I'll leave it actually
           query = String.format("UPDATE Users SET %s = %s FROM Users INNER JOIN Updates on Users.login = Updates.target WHERE updates.updater = %s;", set, input, esql.user_login); 
           break;
         case 4: 
