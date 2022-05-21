@@ -380,7 +380,7 @@ public class Cafe {
 
 // Rest of the functions definition go in here
 
-  public static void Menu(Cafe esql){}
+  
 
   public static void UpdateProfile(Cafe esql){
 
@@ -491,6 +491,57 @@ public class Cafe {
          System.err.println (e.getMessage ());
     }
     return false;
+  }
+
+  public static void Menu(Cafe esql){
+     boolean keepon = true;
+     int selection = 0;
+     try{
+     while(keepon){
+      System.out.println("Welcome to The Menu");
+      System.out.println("1. See all menu");
+      System.out.println("2. Search an item by its name");
+      System.out.println("3. Search an item by its type");
+      System.out.println("9. Exit");
+      System.out.println("----------------------------");
+      System.out.println("----------------------------");
+      System.out.println("Type your choice: ");
+      selection =  Integer.parseInt(in.readLine());
+
+      switch(selection){
+         case 1:
+            String query = "SELECT * FROM Menu;";
+            //esql.executeQueryAndPrintResult(query);
+            List<List<String>> list_of_menu = esql.executeQueryAndReturnResult(query);
+            System.out.println("----------------------------");
+            for(int i=0; i<list_of_menu.size(); i++){
+               
+               System.out.println("Menu"+ (i+1));
+               System.out.println("----------------------------");
+               for(int j=0; j<list_of_menu.get(i).size(); j++){
+                     System.out.println(list_of_menu.get(i).get(j));
+               }
+                  System.out.println("----------------------------");
+            }
+         break;
+
+         case 2:
+         break;
+
+         case 3:
+         break;
+
+         case 9:
+         keepon = false;
+         break;
+
+         default:
+         System.out.println("Invalid Number!");
+      }
+     }
+     }catch (Exception e){
+        System.err.println (e.getMessage ());
+     }
   }
 
   public static void PlaceOrder(Cafe esql){}
