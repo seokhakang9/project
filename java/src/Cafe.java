@@ -496,6 +496,9 @@ public class Cafe {
   public static void Menu(Cafe esql){
      boolean keepon = true;
      int selection = 0;
+     String itemName;
+     String itemType;
+
      try{
      while(keepon){
       System.out.println("Welcome to The Menu");
@@ -505,12 +508,12 @@ public class Cafe {
       System.out.println("9. Exit");
       System.out.println("----------------------------");
       System.out.println("----------------------------");
-      System.out.println("Type your choice: ");
+      System.out.print("Type your choice: ");
       selection =  Integer.parseInt(in.readLine());
-
+      String query;
       switch(selection){
          case 1:
-            String query = "SELECT * FROM Menu;";
+            query = "SELECT * FROM Menu;";
             //esql.executeQueryAndPrintResult(query);
             List<List<String>> list_of_menu = esql.executeQueryAndReturnResult(query);
             System.out.println("----------------------------");
@@ -526,9 +529,35 @@ public class Cafe {
          break;
 
          case 2:
+            System.out.print("Type the name of item: ");
+            itemName =  in.readLine();
+            query = String.format("SELECT * FROM Menu M WHERE M.itemName = '%s';", itemName);
+            List<List<String>> itemDetail = esql.executeQueryAndReturnResult(query);
+            System.out.println("----------------------------");
+            for(int i=0; i<itemDetail.size(); i++){
+               System.out.println("Menu"+ (i+1));
+               System.out.println("----------------------------");
+               for(int j=0; j<itemDetail.get(i).size(); j++){
+                     System.out.println(itemDetail.get(i).get(j));
+               }
+               System.out.println("----------------------------");
+            }
          break;
 
          case 3:
+            System.out.print("Type the type you want to find: ");
+            itemType =  in.readLine();
+            query = String.format("SELECT * FROM Menu M WHERE M.type = '%s';", itemType);
+            List<List<String>> typeDetail = esql.executeQueryAndReturnResult(query);
+            System.out.println("----------------------------");
+            for(int i=0; i<typeDetail.size(); i++){
+               System.out.println("Menu"+ (i+1));
+               System.out.println("----------------------------");
+               for(int j=0; j<typeDetail.get(i).size(); j++){
+                     System.out.println(typeDetail.get(i).get(j));
+               }
+               System.out.println("----------------------------");
+            }
          break;
 
          case 9:
