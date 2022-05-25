@@ -111,13 +111,13 @@ public class Cafe {
       // iterates through the result set and output them to standard out.
       boolean outputHeader = true;
       while (rs.next()){
-	 if(outputHeader){
-	    for(int i = 1; i <= numCol; i++){
-		System.out.print(rsmd.getColumnName(i) + "\t");
-	    }
-	    System.out.println();
-	    outputHeader = false;
-	 }
+		 if(outputHeader){
+			for(int i = 1; i <= numCol; i++){
+			System.out.print(rsmd.getColumnName(i) + "\t");
+			}
+			System.out.println();
+			outputHeader = false;
+		 }
          for (int i=1; i<=numCol; ++i)
             System.out.print (rs.getString (i) + "\t");
          System.out.println ();
@@ -155,10 +155,10 @@ public class Cafe {
       boolean outputHeader = false;
       List<List<String>> result  = new ArrayList<List<String>>();
       while (rs.next()){
-          List<String> record = new ArrayList<String>();
-         for (int i=1; i<=numCol; ++i)
-            record.add(rs.getString (i));
-         result.add(record);
+        List<String> record = new ArrayList<String>();
+		for (int i=1; i<=numCol; ++i)
+			record.add(rs.getString (i));
+        result.add(record);
       }//end while
       stmt.close ();
       return result;
@@ -182,7 +182,7 @@ public class Cafe {
        int rowCount = 0;
 
        // iterates through the result set and count nuber of results.
-       if(rs.next()){
+       while (rs.next()){
           rowCount++;
        }//end while
        stmt.close ();
