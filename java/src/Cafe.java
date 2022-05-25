@@ -380,7 +380,7 @@ public class Cafe {
 
 // Rest of the functions definition go in here
 
-  public static void Menu(Cafe esql){}
+  
 
   public static void UpdateProfile(Cafe esql){
 
@@ -491,6 +491,86 @@ public class Cafe {
          System.err.println (e.getMessage ());
     }
     return false;
+  }
+
+  public static void Menu(Cafe esql){
+     boolean keepon = true;
+     int selection = 0;
+     String itemName;
+     String itemType;
+
+     try{
+     while(keepon){
+      System.out.println("Welcome to The Menu");
+      System.out.println("1. See all menu");
+      System.out.println("2. Search an item by its name");
+      System.out.println("3. Search an item by its type");
+      System.out.println("9. Exit");
+      System.out.println("----------------------------");
+      System.out.println("----------------------------");
+      System.out.print("Type your choice: ");
+      selection =  Integer.parseInt(in.readLine());
+      String query;
+      switch(selection){
+         case 1:
+            query = "SELECT * FROM Menu;";
+            //esql.executeQueryAndPrintResult(query);
+            List<List<String>> list_of_menu = esql.executeQueryAndReturnResult(query);
+            System.out.println("----------------------------");
+            for(int i=0; i<list_of_menu.size(); i++){
+               
+               System.out.println("Menu"+ (i+1));
+               System.out.println("----------------------------");
+               for(int j=0; j<list_of_menu.get(i).size(); j++){
+                     System.out.println(list_of_menu.get(i).get(j));
+               }
+                  System.out.println("----------------------------");
+            }
+         break;
+
+         case 2:
+            System.out.print("Type the name of item: ");
+            itemName =  in.readLine();
+            query = String.format("SELECT * FROM Menu M WHERE M.itemName = '%s';", itemName);
+            List<List<String>> itemDetail = esql.executeQueryAndReturnResult(query);
+            System.out.println("----------------------------");
+            for(int i=0; i<itemDetail.size(); i++){
+               System.out.println("Menu"+ (i+1));
+               System.out.println("----------------------------");
+               for(int j=0; j<itemDetail.get(i).size(); j++){
+                     System.out.println(itemDetail.get(i).get(j));
+               }
+               System.out.println("----------------------------");
+            }
+         break;
+
+         case 3:
+            System.out.print("Type the type you want to find: ");
+            itemType =  in.readLine();
+            query = String.format("SELECT * FROM Menu M WHERE M.type = '%s';", itemType);
+            List<List<String>> typeDetail = esql.executeQueryAndReturnResult(query);
+            System.out.println("----------------------------");
+            for(int i=0; i<typeDetail.size(); i++){
+               System.out.println("Menu"+ (i+1));
+               System.out.println("----------------------------");
+               for(int j=0; j<typeDetail.get(i).size(); j++){
+                     System.out.println(typeDetail.get(i).get(j));
+               }
+               System.out.println("----------------------------");
+            }
+         break;
+
+         case 9:
+         keepon = false;
+         break;
+
+         default:
+         System.out.println("Invalid Number!");
+      }
+     }
+     }catch (Exception e){
+        System.err.println (e.getMessage ());
+     }
   }
 
   public static void PlaceOrder(Cafe esql){}
