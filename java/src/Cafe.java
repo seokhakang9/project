@@ -498,6 +498,13 @@ public class Cafe {
      int selection = 0;
      String itemName;
      String itemType;
+     String type = GetType(esql).replaceAll("\\s", "");
+     String query;
+     if(type.equalsIgnoreCase("Manager")){
+      System.out.println("====================");
+      System.out.println(GetType(esql));
+      System.out.println("====================");
+     }
 
      try{
      while(keepon){
@@ -505,12 +512,18 @@ public class Cafe {
       System.out.println("1. See all menu");
       System.out.println("2. Search an item by its name");
       System.out.println("3. Search an item by its type");
+      if(type.equalsIgnoreCase("Manager")){
+         System.out.println("4. Add an item");
+         System.out.println("5. Delete an item by its name");
+         System.out.println("6. Update an item by its name");
+      }
       System.out.println("9. Exit");
       System.out.println("----------------------------");
       System.out.println("----------------------------");
       System.out.print("Type your choice: ");
+
       selection =  Integer.parseInt(in.readLine());
-      String query;
+
       switch(selection){
          case 1:
             query = "SELECT * FROM Menu;";
@@ -560,6 +573,11 @@ public class Cafe {
             }
          break;
 
+         case 4:
+         case 5:
+         case 6:
+         ManageMenuHelper(esql, selection);
+         break;
          case 9:
          keepon = false;
          break;
@@ -570,6 +588,123 @@ public class Cafe {
      }
      }catch (Exception e){
         System.err.println (e.getMessage ());
+     }
+  }
+
+  public static void ManageMenuHelper(Cafe esql, int selection){
+     try{
+     System.out.println("ManageMenuHelper");
+     
+     String itemName;
+     String type = "";
+     int price;
+     String description;
+     String imageURL;
+
+     String memberType = GetType(esql).replaceAll("\\s", "");
+     String query = "";
+
+     if(memberType.equals("Manager")){
+        switch(selection){
+           case 4:
+           System.out.print("Type the name of item: ");
+           itemName = in.readLine();
+           System.out.print("Type the type of item: ");
+           type = in.readLine();
+           System.out.print("Type the price of item: ");
+           price = Integer.parseInt(in.readLine());
+           System.out.print("Type the description of item: ");
+           description = in.readLine();
+           System.out.print("Type the imageURL of item: ");
+           imageURL = in.readLine();
+           
+           query = String.format("INSERT INTO Menu (itemName, type, price, description, imageURL) VALUES ('%s','%s','%d','%s','%s')", itemName, type, price, description, imageURL);
+           try{
+           esql.executeUpdate(query);
+           }catch(Exception e){
+              System.err.println (e.getMessage ());
+           }
+           break;
+
+           case 5:
+           System.out.print("Type the name of item to delete: ");
+           itemName = in.readLine();
+
+           query = String.format("DELETE FROM itemStatus where itemName = '%s'", itemName);
+           try{
+           esql.executeUpdate(query);
+           }catch(Exception e){
+              System.err.println (e.getMessage ());
+           }
+
+           query = String.format("DELETE FROM Menu where itemName = '%s'", itemName);
+           try{
+           esql.executeUpdate(query);
+           }catch(Exception e){
+              System.err.println (e.getMessage ());
+           }
+           break;
+
+           case 6:
+           System.out.print("Type the name of item to update: ");
+           itemName = in.readLine();
+           int selectionForUpdate;
+           System.out.println("1. Type");
+           System.out.println("2. Price");
+           System.out.println("3. Description");
+           System.out.println("4. image URL");
+           System.out.println("Type the number of the attribute to update: ");
+           selectionForUpdate = Integer.parseInt(in.readLine());
+           
+           switch(selectionForUpdate){
+              case 1:
+              System.out.print("Type the type of item: ");
+              type = in.readLine();
+              query = String.format("UPDATE Menu SET type = '%s' WHERE itemName = '%s'", type, itemName);
+              break;
+              case 2:
+              System.out.print("Type the price: ");
+              price = Integer.parseInt(in.readLine());
+              query = String.format("UPDATE Menu SET price = '%d' WHERE itemName = '%s'", price, itemName);
+              break;
+              case 3:
+              System.out.print("Type the description: ");
+              description = in.readLine();
+              query = String.format("UPDATE Menu SET description = '%s' WHERE itemName = '%s'", description, itemName);
+              break;
+              case 4:
+              System.out.print("Type the image URL: ");
+              imageURL = in.readLine();
+              query = String.format("UPDATE Menu SET imageURL = '%s' WHERE imageURL = '%s'", imageURL, itemName);
+              break;
+              default:              
+           }
+
+           try{
+           esql.executeUpdate(query);
+           }catch(Exception e){
+              System.err.println (e.getMessage ());
+           }
+
+         //   price = Integer.parseInt(in.readLine());
+         //   System.out.print("Type the description of item: ");
+         //   description = in.readLine();
+         //   System.out.print("Type the imageURL of item: ");
+         //   imageURL = in.readLine();
+           
+         //   query = String.format("INSERT INTO Menu (itemName, type, price, description, imageURL) VALUES ('%s','%s','%d','%s','%s')", itemName, type, price, description, imageURL);
+         //   try{
+         //   esql.executeUpdate(query);
+         //   }catch(Exception e){
+         //      System.err.println (e.getMessage ());
+         break;
+        }
+     }
+     else{
+        System.out.println("You don't have permission");
+     }
+     } catch(IOException e){
+
      }
   }
 
