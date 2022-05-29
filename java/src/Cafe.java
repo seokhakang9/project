@@ -710,7 +710,88 @@ public class Cafe {
 
   public static void PlaceOrder(Cafe esql){}
 
-  public static void UpdateOrder(Cafe esql){}
+  public static void UpdateOrder(Cafe esql){
+     // if customer
+     // type order id
+      // if non-paid order
+         // then we update the menu.
+     // 
+     // if manager
+     // type order id
+     // change order to paid
+     int orderid;
+     String itemName;
+     Double price;
+     String query;
+     String type = GetType(esql).replaceAll("\\s", "");
+     try{
+     if(type.equalsIgnoreCase("Customer")){
+        System.out.println("Customer - Update");
+        System.out.print("Input the orderid to modify: ");
+        orderid = Integer.parseInt(in.readLine());
+        
+        if(GetPaidType(esql, orderid).equals("f")){
+           System.out.println("You can add an item");
+           System.out.print("Input the name of item to add: ");
+           itemName = in.readLine();
+           price = GetItemPrice(esql, itemName);
+           System.out.println(price);
+           query = String.format("UPDATE Orders SET total = total + '%f' WHERE orderid = '%d'", price, orderid);
+           esql.executeUpdate(query);
+           System.out.println(GetOrderTotal(esql, orderid));
+        }
+        else{
+           System.out.print("You can't change the paid order.");
+        }
+     }
+     else if(type.equalsIgnoreCase("Manager")||type.equalsIgnoreCase("Employee")){
+        System.out.println("Manager or Employee - Update");
+     }
+     }
+     catch(Exception e){
+        System.out.println("Error!");
+     }
+  }
+   // Helper function
+   public static String GetPaidType(Cafe esql, int orderid){
+    try {
+      String query = String.format("SELECT O.paid FROM Orders O WHERE O.orderid = '%d';", orderid);
+      List<List<String>> result;
+      result = esql.executeQueryAndReturnResult (query);
+      return result.get(0).get(0); 
+    } catch (Exception e) {
+      // e.printStackTrace();
+         System.err.println (e.getMessage ());
+    }
+    return "";
+  }
+
+   public static Double GetOrderTotal(Cafe esql, int orderid){
+    try {
+      String query = String.format("SELECT O.total FROM Orders O WHERE O.orderid = '%d';", orderid);
+      List<List<String>> result;
+      result = esql.executeQueryAndReturnResult (query);
+      return Double.parseDouble(result.get(0).get(0)); 
+    } catch (Exception e) {
+      // e.printStackTrace();
+         System.err.println (e.getMessage ());
+    }
+    return 0.0;
+  }
+
+   public static Double GetItemPrice(Cafe esql, String itemName){
+    try {
+      String query = String.format("SELECT M.price FROM Menu M WHERE M.itemName = '%s';", itemName);
+      List<List<String>> result;
+      result = esql.executeQueryAndReturnResult(query);
+      System.out.println(result.get(0).get(0));
+      return Double.parseDouble(result.get(0).get(0)); 
+    } catch (Exception e) {
+      // e.printStackTrace();
+         System.err.println (e.getMessage ());
+    }
+    return 0.0;
+  }
 
 }//end Cafe
 
