@@ -746,6 +746,18 @@ public class Cafe {
      }
      else if(type.equalsIgnoreCase("Manager")||type.equalsIgnoreCase("Employee")){
         System.out.println("Manager or Employee - Update");
+        System.out.print("Input the orderid to change unpaid to paid: ");
+        orderid = Integer.parseInt(in.readLine());
+        if(GetPaidType(esql, orderid).equals("t")){
+          System.out.println("t");
+          System.out.println("Can't change the paid order.");
+        }
+        else if(GetPaidType(esql, orderid).equals("f")){
+          System.out.println("f");
+          query = String.format("UPDATE Orders SET paid = true WHERE orderid = '%d'", orderid);
+          esql.executeUpdate(query);
+          System.out.println(GetPaidType(esql, orderid));
+        }
      }
      }
      catch(Exception e){
