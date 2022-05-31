@@ -573,7 +573,32 @@ public class Cafe {
      }
   }
 
-  public static void PlaceOrder(Cafe esql){}
+  public static void PlaceOrder(Cafe esql){
+    String set = "";
+    String query = "";
+
+    try {
+      boolean keepon = true;
+      query = String.format("INSERT INTO Orders (orderid, login, paid, timeStampRecieved, total) VALUES (DEFAULT, %s, false, NOW(), %d)", esql.user_login, 0);
+      esql.executeUpdate(query); 
+      while (keepon) {
+        System.out.println("NEXT ITEM (q to quit): ");
+        set = in.readLine(); 
+        if(set=="q"){
+          keepon=false;
+          break;
+        }
+        query = String.format("INSERT INTO ItemStatus (orderid, itemName, lastUpdated, status, comments) VALUES (LASTVAL(), %s, NOW(), 'Hasn't started', ''", set);
+        esql.executeUpdate(query);
+        query = String.format("UPDATE Orders O, Menu M SET total = total + M.price WHERE O.orderid=LASTVAL() AND M.itemName = %s", set);
+        esql.executeUpdate(query);
+        // Check user
+      }
+    } catch (Exception e) {
+      // e.printStackTrace();
+      System.err.println (e.getMessage ());
+    } 
+  }
 
   public static void UpdateOrder(Cafe esql){}
 
