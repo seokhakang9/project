@@ -579,21 +579,38 @@ public class Cafe {
 
     try {
       boolean keepon = true;
-      query = String.format("INSERT INTO Orders (orderid, login, paid, timeStampRecieved, total) VALUES (DEFAULT, %s, false, NOW(), %d)", esql.user_login, 0);
+      query = String.format("INSERT INTO Orders (orderid, login, paid, timeStampRecieved, total) VALUES (DEFAULT, '%s', false, NOW(), 0)", esql.user_login);
+      
       esql.executeUpdate(query); 
       while (keepon) {
-        System.out.println("NEXT ITEM (q to quit): ");
+        System.out.println("NEXT ITEM (9 to quit): ");
         set = in.readLine(); 
-        if(set=="q"){
+        if(set.compareToIgnoreCase("9")==0){
           keepon=false;
-          break;
+        }else{
+          //System.out.println(set.compareToIgnoreCase("9"));
+          query = String.format("INSERT INTO ItemStatus (orderid, itemName, lastUpdated, status, comments) VALUES (LASTVAL(), '%s', NOW(), 'Hasn''t started', '')", set);
+          //System.out.println(query);
+          esql.executeUpdate(query);
+          query = String.format("UPDATE Orders SET total = total + (SELECT MAX(M.price) FROM Menu M WHERE M.itemName = '%s') WHERE orderid=LASTVAL()", set);
+          //System.out.println(query);
+          esql.executeUpdate(query);
+          // query = String.format("SELECT orderid, total FROM Orders WHERE orderid=LASTVAL()");
+          // //System.out.println(query);
+          // esql.executeQueryAndPrintResult(query);
+
+          // Print order
+          query = String.format("SELECT * FROM ItemStatus WHERE orderid=LASTVAL()");
+          System.out.println(query);
+          esql.executeQueryAndPrintResult(query);
+          // Check user
         }
-        query = String.format("INSERT INTO ItemStatus (orderid, itemName, lastUpdated, status, comments) VALUES (LASTVAL(), %s, NOW(), 'Hasn't started', ''", set);
-        esql.executeUpdate(query);
-        query = String.format("UPDATE Orders O, Menu M SET total = total + M.price WHERE O.orderid=LASTVAL() AND M.itemName = %s", set);
-        esql.executeUpdate(query);
-        // Check user
       }
+      
+      query = String.format("SELECT * FROM Orders WHERE orderid=LASTVAL()");
+      //System.out.println(query);
+      esql.executeQueryAndPrintResult(query);
+
     } catch (Exception e) {
       // e.printStackTrace();
       System.err.println (e.getMessage ());
