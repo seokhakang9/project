@@ -593,8 +593,6 @@ public class Cafe {
 
   public static void ManageMenuHelper(Cafe esql, int selection){
      try{
-     System.out.println("ManageMenuHelper");
-     
      String itemName;
      String type = "";
      int price;
@@ -653,7 +651,7 @@ public class Cafe {
            System.out.println("2. Price");
            System.out.println("3. Description");
            System.out.println("4. image URL");
-           System.out.println("Type the number of the attribute to update: ");
+           System.out.print("Type the number of the attribute to update: ");
            selectionForUpdate = Integer.parseInt(in.readLine());
            
            switch(selectionForUpdate){
@@ -685,18 +683,6 @@ public class Cafe {
            }catch(Exception e){
               System.err.println (e.getMessage ());
            }
-
-         //   price = Integer.parseInt(in.readLine());
-         //   System.out.print("Type the description of item: ");
-         //   description = in.readLine();
-         //   System.out.print("Type the imageURL of item: ");
-         //   imageURL = in.readLine();
-           
-         //   query = String.format("INSERT INTO Menu (itemName, type, price, description, imageURL) VALUES ('%s','%s','%d','%s','%s')", itemName, type, price, description, imageURL);
-         //   try{
-         //   esql.executeUpdate(query);
-         //   }catch(Exception e){
-         //      System.err.println (e.getMessage ());
          break;
         }
      }
@@ -711,14 +697,6 @@ public class Cafe {
   public static void PlaceOrder(Cafe esql){}
 
   public static void UpdateOrder(Cafe esql){
-     // if customer
-     // type order id
-      // if non-paid order
-         // then we update the menu.
-     // 
-     // if manager
-     // type order id
-     // change order to paid
      int orderid;
      String itemName;
      Double price;
@@ -729,19 +707,20 @@ public class Cafe {
         System.out.println("Customer - Update");
         System.out.print("Input the orderid to modify: ");
         orderid = Integer.parseInt(in.readLine());
-        
         if(GetPaidType(esql, orderid).equals("f")){
+           //=======
+           // Check the orderer of order matches log-in name.
+           //=======
            System.out.println("You can add an item");
            System.out.print("Input the name of item to add: ");
            itemName = in.readLine();
            price = GetItemPrice(esql, itemName);
-           System.out.println(price);
            query = String.format("UPDATE Orders SET total = total + '%f' WHERE orderid = '%d'", price, orderid);
            esql.executeUpdate(query);
-           System.out.println(GetOrderTotal(esql, orderid));
+           System.out.println("Total: " +  GetOrderTotal(esql, orderid));
         }
         else{
-           System.out.print("You can't change the paid order.");
+           System.out.println("You can't change the paid order.");
         }
      }
      else if(type.equalsIgnoreCase("Manager")||type.equalsIgnoreCase("Employee")){
@@ -749,14 +728,13 @@ public class Cafe {
         System.out.print("Input the orderid to change unpaid to paid: ");
         orderid = Integer.parseInt(in.readLine());
         if(GetPaidType(esql, orderid).equals("t")){
-          System.out.println("t");
           System.out.println("Can't change the paid order.");
         }
         else if(GetPaidType(esql, orderid).equals("f")){
-          System.out.println("f");
+          System.out.println("The order is unpaid.");
           query = String.format("UPDATE Orders SET paid = true WHERE orderid = '%d'", orderid);
           esql.executeUpdate(query);
-          System.out.println(GetPaidType(esql, orderid));
+          System.out.println("The payment status changed From unpaid to paid.");
         }
      }
      }
