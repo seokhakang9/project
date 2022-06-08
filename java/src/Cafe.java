@@ -837,14 +837,14 @@ public class Cafe {
          esql.executeQueryAndPrintResult(query);
 
         }
-        else{
-         System.out.println("Customer");
+        
+         System.out.println("As a Customer");
          String name = esql.user_login;
          System.out.println(name);
          //SELECT * FROM Orders O WHERE O.login=name ORDER BY timeStampRecieved DESC LIMIT 5;
          String query = String.format("SELECT * FROM Orders O WHERE O.login='%s' ORDER BY timeStampRecieved DESC LIMIT 5;", name);
          esql.executeQueryAndPrintResult(query);
-        }
+        
      }catch(Exception e){
       System.err.println (e.getMessage ());
      }
