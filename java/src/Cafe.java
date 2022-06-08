@@ -275,6 +275,7 @@ public class Cafe {
                 System.out.println("2. Update Profile");
                 System.out.println("3. Place a Order");
                 System.out.println("4. Update a Order");
+                System.out.println("5. Browse Your History");
                 System.out.println(".........................");
                 System.out.println("9. Log out");
                 switch (readChoice()){
@@ -282,6 +283,7 @@ public class Cafe {
                    case 2: UpdateProfile(esql); break;
                    case 3: PlaceOrder(esql); break;
                    case 4: UpdateOrder(esql); break;
+                   case 5: BrowseHistory(esql); break;
                    case 9: usermenu = false; break;
                    default : System.out.println("Unrecognized choice!"); break;
                 }
@@ -825,6 +827,27 @@ public class Cafe {
          System.err.println (e.getMessage ());
     }
     return 0.0;
+  }
+  public static void BrowseHistory(Cafe esql){
+     try{
+        String memberType = GetType(esql).replaceAll("\\s", "");
+        if(memberType.equals("Manager")||memberType.equals("Employee")){
+         System.out.println("Manager or Employee");
+         String query = String.format("SELECT * FROM Orders O WHERE O.timeStampRecieved BETWEEN NOW() - INTERVAL '24 HOURS' AND NOW() ORDER BY O.timeStampRecieved DESC");
+         esql.executeQueryAndPrintResult(query);
+
+        }
+        
+         System.out.println("As a Customer");
+         String name = esql.user_login;
+         System.out.println(name);
+         //SELECT * FROM Orders O WHERE O.login=name ORDER BY timeStampRecieved DESC LIMIT 5;
+         String query = String.format("SELECT * FROM Orders O WHERE O.login='%s' ORDER BY timeStampRecieved DESC LIMIT 5;", name);
+         esql.executeQueryAndPrintResult(query);
+        
+     }catch(Exception e){
+      System.err.println (e.getMessage ());
+     }
   }
 
 }//end Cafe
